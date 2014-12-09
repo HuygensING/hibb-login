@@ -5,14 +5,17 @@ View, model and logic for logging in.
 ## Initìalize
 
 ```coffeescript
+# Require the module.
 LoginComponent = require 'hibb-login'
 
+# Init the component with the type of logins you need.
 LoginComponent.init
 	basic:
 		url: "http://some-url-for-basic-authentication"
 	federated:
 		url: "http://some-url-for-federated-authentication"
 
+# Create the user.
 LoginComponent.createUser
 	tokenPrefix: "some-prefix"
 	url: -> "http://some-url-to-get-user-data"
