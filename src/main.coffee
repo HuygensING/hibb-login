@@ -22,19 +22,22 @@ class Main
 	@param {boolean} [this.settings.federated=false]
 	###
 	init: (@settings={}) ->
-		assert.ok @settings.federated or @settings.basic, "HIBB Login: There must either be a federated or a basic login! Set federated or basic to true with the LoginComponent's init method."
+		assert.ok @settings.federated? or @settings.basic?, "HIBB Login: There must either be a federated or a basic login! Set federated or basic to true with the LoginComponent's init method: see https://github.com/HuygensING/hibb-login#init%C3%ACalize."
 
-		@initialzed = true
+		@initialized = true
 
 	getLoginView: (options={}) ->
-		assert.ok @initialized, "HIBB Login: Initialize with settings first: see http://nu.nl"
+		assert.ok @initialized, "HIBB Login: Initialize with settings first: see https://github.com/HuygensING/hibb-login#init%C3%ACalize"
 
 		options.user = @getUser()
 
-		if @_views.login?
-			@_views.login.destroy()
+		@destroyLoginView()
 
 		@_views.login = new Login @settings, options
+
+	destroyLoginView: ->
+		if @_views.login?
+			@_views.login.destroy()
 
 	getUser: ->
 		unless @_user?
