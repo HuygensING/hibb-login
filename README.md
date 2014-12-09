@@ -4,7 +4,7 @@ View, model and logic for logging in.
 
 ## Initìalize
 
-```
+```coffeescript
 LoginComponent = require 'hibb-login'
 
 LoginComponent.init
@@ -18,24 +18,18 @@ LoginComponent.createUser
 	url: -> "http://some-url-to-get-user-data"
 	headers:
 		KEY: "value"
-
 ```
 
-## Get the user.
+## Other methods
 
-```
+```coffeescript
+# Get the user.
 LoginComponent.getUser()
-```
 
-## Get the token.
-
-```
+# Get the token.
 LoginComponent.getUser().getToken()
-```
 
-## Get the login view.
-
-```
+# Get the login view.
 LoginComponent.getLoginView
 	title: "Login"
 	modal: true
