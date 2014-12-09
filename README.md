@@ -2,7 +2,7 @@
 
 View, model and logic for logging in.
 
-## Initìalize
+## Initialize
 
 ```coffeescript
 # Require the module.
