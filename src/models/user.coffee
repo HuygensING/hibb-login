@@ -1,16 +1,26 @@
 Backbone = require 'backbone'
+$ = require 'jquery'
 
-TOKEN_VAR = 'hi-auth-token'
+funcky = require 'funcky.req'
+
+###
+EVENTS TRIGGERED
+
+basic:authorized
+basic:unauthorized
+data-fetched
+###
 
 class User extends Backbone.Model
 
-	isLoggedIn: ->
-		@_handleTokenInUrl()
+	initialize: (attrs, @settings, @options) ->
+		@url = @options.url() if @options.url?
+		@fetched = false
+		@_prefix = "hi-#{@options.tokenPrefix}"
 
-		# TODO Should hi-auth-token be project specific?
-		@getToken()?
-
-	_handleTokenInUrl: ->
+		@tokenPropertyName = "#{@_prefix}-auth-token"
+		
+	_checkTokenInUrl: ->
 		path = window.location.search.substr 1
 		parameters = path.split '&'
 
@@ -18,14 +28,86 @@ class User extends Backbone.Model
 			[key, value] = param.split('=')
 
 			if key is 'hsid'
-				@_setAuthToken value
+				@setToken value
 				history.replaceState? {}, '', window.location.pathname
 
-	_setAuthToken: (token) ->
-		localStorage.setItem TOKEN_VAR, token
+	_fetchUserData: ->
+		options = 
+			success: =>
+				@trigger 'data-fetched'
+				@fetched = true
+			error: (m, response, opts) =>
+				if response.status is 401
+					@removeToken()
+					@trigger 'unauthorized', response
+
+			headers:
+				Authorization: @getToken()
+
+		_.extend options.headers, @options.headers
+
+		@fetch options
+
+	basicLogin: (username, password) ->
+		options =
+			headers:
+				Authorization: 'Basic ' + btoa(username+':'+password)
+
+		req = funcky.post @settings.basic.url, options
+		req.done (res) =>
+			token = res.getResponseHeader('X_AUTH_TOKEN')
+			@trigger 'basic:authorized', token
+			@setToken token
+			@_fetchUserData()
+
+		req.fail (res) =>
+			response = JSON.parse(res.response)
+			@trigger 'basic:unauthorized', res
+
+	federatedLogin: ->
+		wl = window.location;
+		hsURL = wl.origin + wl.pathname
+		loginURL = @settings.federated.url
+
+		form = $ '<form>'
+		form.attr
+			method: 'POST'
+			action: loginURL
+
+		hsUrlEl = $('<input>').attr
+			name: 'hsurl'
+			value: hsURL
+			type: 'hidden'
+
+		form.append hsUrlEl
+		$('body').append form
+
+		form.submit()
+
+	authorize: ->
+		@_checkTokenInUrl() if @settings.federated
+		@_fetchUserData() unless @fetched
+
+		@
+
+	isLoggedIn: ->
+		@getToken()?
+
+	removeToken: ->
+		localStorage.removeItem @tokenPropertyName
+
+	setToken: (token) ->
+		localStorage.setItem @tokenPropertyName, token
 
 	getToken: ->
-		localStorage.getItem TOKEN_VAR
+		localStorage.getItem @tokenPropertyName
+
+	setFederatedLoginStarted: ->
+		localStorage.setItem "#{@_prefix}-federated-login-started", true
+
+	federatedLoginHasStarted: ->
+		localStorage.getItem("#{@_prefix}-federated-login-started")?
+
 
 
 module.exports = User

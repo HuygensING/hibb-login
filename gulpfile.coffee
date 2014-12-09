@@ -1,6 +1,7 @@
 gulp = require 'gulp'
 gutil = require 'gulp-util'
 rename = require 'gulp-rename'
+concat = require 'gulp-concat'
 streamify = require 'streamify'
 browserify = require 'browserify'
 watchify = require 'watchify'
@@ -11,6 +12,16 @@ extend = require 'extend'
 nib = require 'nib'
 
 productionDir = './dist'
+
+
+
+gulp.task 'concat-css', ['stylus'], ->
+	gulp.src(['./node_modules/hibb-modal/dist/main.css', './dist/main.css'])
+		.pipe(concat("main.css"))
+		.pipe(gulp.dest("./dist"))
+
+gulp.task 'stylus', ->
+	createCSS()
 
 createCSS = ->
 	gutil.log('Creating CSS')
@@ -37,13 +48,12 @@ createBundle = (watch=false) ->
 	bundle = ->
 		# Create bundle
 		gutil.log('Browserify: bundling')
-		bundler.bundle(standalone: 'Pagination')
+		bundler.bundle(standalone: 'hibb-login')
 			.on('error', ((err) -> gutil.log("Bundling error ::: "+err)))
 			.pipe(source("index.js"))
 			.pipe(gulp.dest(productionDir))
 
 		minify()
-		createCSS()
 
 	bundler = browserify args
 	if watch
@@ -73,7 +83,6 @@ gulp.task 'browserify-libs', ->
 	bundler = browserify paths
 
 	for own id, path of libs
-		console.log id
 		bundler.require path, expose: id
 
 	gutil.log('Browserify: bundling libs')
@@ -82,6 +91,6 @@ gulp.task 'browserify-libs', ->
 		.pipe(gulp.dest(productionDir))
 
 gulp.task 'watch', ['watchify'], ->
-	gulp.watch ['./src/main.styl'], -> createCSS()
+	gulp.watch ['./src/main.styl', './node_modules/hibb-modal/dist/main.css'], ['concat-css']
 
 gulp.task 'default', ['watch']

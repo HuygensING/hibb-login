@@ -1,24 +1,78 @@
 @import 'nib'
 
-#hi-backbone-login
-	.overlay
-		position fixed
-		left 0
-		right 0
-		top 0
-		bottom 0
-		background rgba(0, 0, 0, 0.7)	
+inline-block()
+	display inline-block
+	box-sizing border-box
+	vertical-align top
+
+.hibb-modal .modalbody
+	padding 0
+	background #EEE
+	
+	header
+		padding 15px 30px 15px 30px
+		background #888
+		color white
 		
-	.modal
-		position fixed
-		top 50%
-		left 50%
-		margin-top -100px
-		margin-left -100px
-		height 200px
-		width 200px
-		background white
-		border-radius 3px
+		h2, p.message
+			inline-block()
+			
+		h2
+			font-size 1.2em
+			font-weight normal
+			margin-right 55px
+			
+		p.message.success
+			margin 0
+			padding 4px 12px
+			background white
+			font-weight bold
+		
+	.body
+		padding 30px
+		margin 0
+
+#hibb-login
+	h3
+		margin-top 0
+		
+	.local, .federated
+		background #FFF
 		padding 20px
-		box-sizing border-box
+		box-shadow 0 2px 4px #BBB
 		
+	.local
+		margin-top 20px
+		
+		&.has-error		
+			button
+				background red
+				color white
+				cursor default
+				width 100%
+				padding 10px
+				
+		ul
+			margin 0
+			padding 0
+			list-style none
+			
+			li
+				height 40px
+					
+				input
+					box-sizing border-box
+					width 100%
+					height 30px
+					border 1px solid #DDD
+					border-radius 0
+					padding-left 4px
+					outline none
+					font-size 1em
+					
+				button
+					margin-top 10px
+					transition all 500ms
+					width 20%
+					white-space nowrap
+					
