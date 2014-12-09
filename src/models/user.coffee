@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 $ = require 'jquery'
+_ = require 'underscore'
 
 funcky = require 'funcky.req'
 
