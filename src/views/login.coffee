@@ -18,8 +18,8 @@ class Login extends Backbone.View
 	@constructs
 	
 	@param {object} this.settings
-	@param {object} this.settings.boolean
-	@param {string} this.settings.boolean.url
+	@param {object} this.settings.basic
+	@param {string} this.settings.basic.url
 	@param {object} this.settings.federated
 	@param {string} this.settings.federated.url
 
@@ -44,8 +44,6 @@ class Login extends Backbone.View
 		if @settings.basic?
 			basic = new Basic(user: @options.user)
 			@$el.append basic.el
-
-
 
 		if @options.modal
 			@_modal = new Modal
