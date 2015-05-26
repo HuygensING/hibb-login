@@ -16,10 +16,11 @@ class Main
 		@_user = null
 
 	###
-	@method
-	@param {object} this.settings - Initialize the LoginComponent with settings.
-	@param {boolean} [this.settings.basic=false]
-	@param {boolean} [this.settings.federated=false]
+	# @method
+	# @param {Object} this.settings - Initialize the LoginComponent with settings.
+	# @param {Object} [this.settings.federated]
+	# @param {Object} [this.settings.basic]
+	# @param {String} [this.settings.requestAccessUrl]
 	###
 	init: (@settings={}) ->
 		assert.ok @settings.federated? or @settings.basic?, "HIBB Login: There must either be a federated or a basic login! Set federated or basic to true with the LoginComponent's init method: see https://github.com/HuygensING/hibb-login#init%C3%ACalize."
@@ -46,10 +47,10 @@ class Main
 		@_user
 
 	###
-	@param {object} options
-	@param {string} tokenPrefix
-	@param {function} url
-	@param {object} headers
+	@param {Object} options
+	@param {String} tokenPrefix
+	@param {Function} url
+	@param {Object} headers
 	###
 	createUser: (options={}) ->
 		@_user = new User [], @settings, options

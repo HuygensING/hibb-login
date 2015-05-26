@@ -6,6 +6,8 @@ Modal = require 'hibb-modal'
 Federated = require './federated'
 Basic = require './basic'
 
+RequestAccess = require './request-access'
+
 ###
 @class
 @extends Backbone.View
@@ -24,9 +26,10 @@ class Login extends Backbone.View
 	@param {string} this.settings.federated.url
 
 	@param {object} this.options
-	@param {object} this.options.user
+	@param {object} this.options.user - Passed by Main
 	@param {function} this.options.success - Callback after succesful login.
 	@param {boolean} [this.options.modal=false] - Render login form in a modal.
+	@param {boolean} [this.options.requestAccess=false] - Render request access button.
 	###
 	initialize: (@settings, @options) ->
 		@options.modal ?= false
@@ -45,6 +48,18 @@ class Login extends Backbone.View
 			basic = new Basic(user: @options.user)
 			@$el.append basic.el
 
+		if @options.requestAccess
+			requestAccess = new RequestAccess @settings
+			
+			@listenTo requestAccess, "request-access", =>
+				@$el.addClass 'request-access-active'
+
+			@listenTo requestAccess, "request-send", =>
+				@_modal.close() if @options.modal
+				@trigger "request-access-complete"
+
+			@$el.append requestAccess.el
+
 		if @options.modal
 			@_modal = new Modal
 				html: @el
@@ -52,8 +67,11 @@ class Login extends Backbone.View
 				title: @options.title
 				width: '400px'
 
-			@listenTo @_modal, 'cancel', => @trigger 'modal:cancel'
-			@listenTo @_modal, 'close', => @trigger 'modal:close'
+			@listenTo @_modal, 'cancel', => 
+				@trigger 'modal:cancel'
+
+			# @listenTo @_modal, 'close', =>
+			# 	@trigger 'modal:close'
 
 		@
 

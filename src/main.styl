@@ -36,12 +36,50 @@ inline-block()
 	h3
 		margin-top 0
 		
-	.local, .federated
+	button, .request-access h3
+		border none
+		font-weight bold
+		padding 4px 12px
+		box-sizing border-box
+		outline none
+		border-radius 3px
+		color white
+		margin 0
+		inline-block()
+		
+	&.request-access-active
+		.request-access
+			h3
+				background white
+				color black
+				margin 0
+				margin-bottom 1em
+				padding 0
+			form
+				display block
+
+		.local, .federated
+			display none
+		
+	.local, .federated, .request-access
 		background #FFF
 		padding 20px
 		box-shadow 0 2px 4px #BBB
 		
-	.local
+	.request-access
+		margin-top 20px
+		
+		h3
+			background gray
+			cursor pointer
+			
+		.message
+			display none
+		
+		form
+			display none
+			
+	.local, .request-access
 		margin-top 20px
 		
 		&.has-error		
@@ -72,7 +110,5 @@ inline-block()
 					
 				button
 					margin-top 10px
-					transition all 500ms
-					width 20%
 					white-space nowrap
 					

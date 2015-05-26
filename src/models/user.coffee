@@ -4,6 +4,8 @@ _ = require 'underscore'
 
 funcky = require 'funcky.req'
 
+btoa = require 'btoa'
+
 ###
 EVENTS TRIGGERED
 
@@ -30,7 +32,7 @@ class User extends Backbone.Model
 
 			if key is 'hsid'
 				@setToken value
-				history.replaceState? {}, '', window.location.pathname
+				Backbone.history.navigate window.location.pathname, trigger: true
 
 	_fetchUserData: ->
 		options = 
@@ -62,7 +64,8 @@ class User extends Backbone.Model
 			@_fetchUserData()
 
 		req.fail (res) =>
-			response = JSON.parse(res.response)
+			if res.hasOwnProperty('response')
+				response = JSON.parse(res.response)
 			@trigger 'basic:unauthorized', res
 
 	federatedLogin: ->

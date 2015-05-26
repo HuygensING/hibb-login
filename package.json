@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "backbone": "^1.1.2",
+    "btoa": "^1.1.2",
     "chai": "^1.10.0",
     "funcky.util": "git+https://github.com/Gijsjan/funcky.util.git",
     "jquery": "^2.1.1",
