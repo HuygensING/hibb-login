@@ -40,5 +40,5 @@ LoginComponent.getLoginView
 
 ## Changelog
 
-### v1.1.0
+### v1.2.0
 * :sparkles: Add button to request access to federated login
