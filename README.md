@@ -40,5 +40,8 @@ LoginComponent.getLoginView
 
 ## Changelog
 
+### v1.2.1
+* Add dist dir to git
+
 ### v1.2.0
 * :sparkles: Add button to request access to federated login
