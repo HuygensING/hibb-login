@@ -40,6 +40,9 @@ LoginComponent.getLoginView
 
 ## Changelog
 
+### v1.3.1
+* :sparkles: Add token type to prefix token
+
 ### v1.2.1
 * Add dist dir to git
 
