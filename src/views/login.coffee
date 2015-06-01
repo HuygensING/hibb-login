@@ -66,6 +66,7 @@ class Login extends Backbone.View
 				cancelAndSubmit: false
 				title: @options.title
 				width: '400px'
+				clickOverlay: false
 
 			@listenTo @_modal, 'cancel', => 
 				@trigger 'modal:cancel'

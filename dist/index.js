@@ -2439,7 +2439,7 @@ function hasOwnProperty(obj, prop) {
       xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         var _ref;
-        if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.readyState === 4) {
           if (promise.callAlways != null) {
             promise.callAlways(xhr);
           }
@@ -3314,7 +3314,9 @@ Main = (function() {
   	 * @method
   	 * @param {Object} this.settings - Initialize the LoginComponent with settings.
   	 * @param {Object} [this.settings.federated]
+  	 * @param {String} [this.settings.federated.url]
   	 * @param {Object} [this.settings.basic]
+  	 * @param {String} [this.settings.basic.url]
   	 * @param {String} [this.settings.requestAccessUrl]
    */
 
@@ -3351,6 +3353,7 @@ Main = (function() {
   /*
   	@param {Object} options
   	@param {String} tokenPrefix
+  	@param {String} tokenType="" - The type of token. Is used as a prefix when sending the Authorization header.
   	@param {Function} url
   	@param {Object} headers
    */
@@ -3358,6 +3361,9 @@ Main = (function() {
   Main.prototype.createUser = function(options) {
     if (options == null) {
       options = {};
+    }
+    if (options.tokenType == null) {
+      options.tokenType = "";
     }
     this._user = new User([], this.settings, options);
     return null;
@@ -3392,6 +3398,7 @@ EVENTS TRIGGERED
 
 basic:authorized
 basic:unauthorized
+unauthorized
 data-fetched
  */
 
@@ -3525,7 +3532,7 @@ User = (function(_super) {
   };
 
   User.prototype.setToken = function(token) {
-    return localStorage.setItem(this.tokenPropertyName, token);
+    return localStorage.setItem(this.tokenPropertyName, this.options.tokenType + token);
   };
 
   User.prototype.getToken = function() {
@@ -3829,7 +3836,8 @@ Login = (function(_super) {
         html: this.el,
         cancelAndSubmit: false,
         title: this.options.title,
-        width: '400px'
+        width: '400px',
+        clickOverlay: false
       });
       this.listenTo(this._modal, 'cancel', (function(_this) {
         return function() {

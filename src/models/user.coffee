@@ -11,6 +11,7 @@ EVENTS TRIGGERED
 
 basic:authorized
 basic:unauthorized
+unauthorized
 data-fetched
 ###
 
@@ -101,7 +102,7 @@ class User extends Backbone.Model
 		localStorage.removeItem @tokenPropertyName
 
 	setToken: (token) ->
-		localStorage.setItem @tokenPropertyName, token
+		localStorage.setItem @tokenPropertyName, @options.tokenType + token
 
 	getToken: ->
 		localStorage.getItem @tokenPropertyName

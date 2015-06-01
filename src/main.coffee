@@ -19,7 +19,9 @@ class Main
 	# @method
 	# @param {Object} this.settings - Initialize the LoginComponent with settings.
 	# @param {Object} [this.settings.federated]
+	# @param {String} [this.settings.federated.url]
 	# @param {Object} [this.settings.basic]
+	# @param {String} [this.settings.basic.url]
 	# @param {String} [this.settings.requestAccessUrl]
 	###
 	init: (@settings={}) ->
@@ -49,10 +51,13 @@ class Main
 	###
 	@param {Object} options
 	@param {String} tokenPrefix
+	@param {String} tokenType="" - The type of token. Is used as a prefix when sending the Authorization header.
 	@param {Function} url
 	@param {Object} headers
 	###
 	createUser: (options={}) ->
+		options.tokenType ?= ""
+
 		@_user = new User [], @settings, options
 
 		# Don't return the new user. The user can only be retrieved by invoking @getUser.
