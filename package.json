@@ -13,6 +13,7 @@
     "btoa": "^1.1.2",
     "chai": "^1.10.0",
     "funcky.util": "git+https://github.com/Gijsjan/funcky.util.git",
+    "funcky.req": "git+https://github.com/Gijsjan/funcky.req.git",
     "hibb-modal": "^1.0.4",
     "jquery": "^2.1.1",
     "mocha": "^2.0.1",

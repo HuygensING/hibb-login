@@ -360,7 +360,9 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":8}],2:[function(_dereq_,module,exports){
+},{"util/":9}],2:[function(_dereq_,module,exports){
+
+},{}],3:[function(_dereq_,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -1471,7 +1473,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":3,"ieee754":4}],3:[function(_dereq_,module,exports){
+},{"base64-js":4,"ieee754":5}],4:[function(_dereq_,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -1486,12 +1488,16 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	var NUMBER = '0'.charCodeAt(0)
 	var LOWER  = 'a'.charCodeAt(0)
 	var UPPER  = 'A'.charCodeAt(0)
+	var PLUS_URL_SAFE = '-'.charCodeAt(0)
+	var SLASH_URL_SAFE = '_'.charCodeAt(0)
 
 	function decode (elt) {
 		var code = elt.charCodeAt(0)
-		if (code === PLUS)
+		if (code === PLUS ||
+		    code === PLUS_URL_SAFE)
 			return 62 // '+'
-		if (code === SLASH)
+		if (code === SLASH ||
+		    code === SLASH_URL_SAFE)
 			return 63 // '/'
 		if (code < NUMBER)
 			return -1 //no match
@@ -1593,93 +1599,93 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],4:[function(_dereq_,module,exports){
-exports.read = function(buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i];
+},{}],5:[function(_dereq_,module,exports){
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
-  i += d;
+  i += d
 
-  e = s & ((1 << (-nBits)) - 1);
-  s >>= (-nBits);
-  nBits += eLen;
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8);
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
-  m = e & ((1 << (-nBits)) - 1);
-  e >>= (-nBits);
-  nBits += mLen;
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8);
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
-    e = 1 - eBias;
+    e = 1 - eBias
   } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity);
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
   } else {
-    m = m + Math.pow(2, mLen);
-    e = e - eBias;
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
   }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
-};
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
 
-exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
-  value = Math.abs(value);
+  value = Math.abs(value)
 
   if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0;
-    e = eMax;
+    m = isNaN(value) ? 1 : 0
+    e = eMax
   } else {
-    e = Math.floor(Math.log(value) / Math.LN2);
+    e = Math.floor(Math.log(value) / Math.LN2)
     if (value * (c = Math.pow(2, -e)) < 1) {
-      e--;
-      c *= 2;
+      e--
+      c *= 2
     }
     if (e + eBias >= 1) {
-      value += rt / c;
+      value += rt / c
     } else {
-      value += rt * Math.pow(2, 1 - eBias);
+      value += rt * Math.pow(2, 1 - eBias)
     }
     if (value * c >= 2) {
-      e++;
-      c /= 2;
+      e++
+      c /= 2
     }
 
     if (e + eBias >= eMax) {
-      m = 0;
-      e = eMax;
+      m = 0
+      e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen);
-      e = e + eBias;
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
     } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
-      e = 0;
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
     }
   }
 
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8);
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
 
-  e = (e << mLen) | m;
-  eLen += mLen;
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8);
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
 
-  buffer[offset + i - d] |= s * 128;
-};
+  buffer[offset + i - d] |= s * 128
+}
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -1704,7 +1710,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1769,14 +1775,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],7:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2366,7 +2372,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,_dereq_("FWaASH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":7,"FWaASH":6,"inherits":5}],9:[function(_dereq_,module,exports){
+},{"./support/isBuffer":8,"FWaASH":7,"inherits":6}],10:[function(_dereq_,module,exports){
 (function (Buffer){
 (function () {
   "use strict";
@@ -2388,7 +2394,7 @@ function hasOwnProperty(obj, prop) {
 }());
 
 }).call(this,_dereq_("buffer").Buffer)
-},{"buffer":2}],10:[function(_dereq_,module,exports){
+},{"buffer":3}],11:[function(_dereq_,module,exports){
 (function() {
   var __hasProp = {}.hasOwnProperty;
 
@@ -2469,7 +2475,7 @@ function hasOwnProperty(obj, prop) {
 
 }).call(this);
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 (function (global){
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var n;"undefined"!=typeof window?n=window:"undefined"!=typeof global?n=global:"undefined"!=typeof self&&(n=self),n.Pagination=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 
@@ -3076,9 +3082,9 @@ module.exports = new ModalManager();
 (3)
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 (function (global){
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jade = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -3141,7 +3147,9 @@ function nulls(val) {
  */
 exports.joinClasses = joinClasses;
 function joinClasses(val) {
-  return Array.isArray(val) ? val.map(joinClasses).filter(nulls).join(' ') : val;
+  return (Array.isArray(val) ? val.map(joinClasses) :
+    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
+    [val]).filter(nulls).join(' ');
 }
 
 /**
@@ -3168,6 +3176,16 @@ exports.cls = function cls(classes, escaped) {
   }
 };
 
+
+exports.style = function (val) {
+  if (val && typeof val === 'object') {
+    return Object.keys(val).map(function (style) {
+      return style + ':' + val[style];
+    }).join(';');
+  } else {
+    return val;
+  }
+};
 /**
  * Render the given attribute.
  *
@@ -3178,6 +3196,9 @@ exports.cls = function cls(classes, escaped) {
  * @return {String}
  */
 exports.attr = function attr(key, val, escaped, terse) {
+  if (key === 'style') {
+    val = exports.style(val);
+  }
   if ('boolean' == typeof val || null == val) {
     if (val) {
       return ' ' + (terse ? key : key + '="' + key + '"');
@@ -3185,10 +3206,24 @@ exports.attr = function attr(key, val, escaped, terse) {
       return '';
     }
   } else if (0 == key.indexOf('data') && 'string' != typeof val) {
+    if (JSON.stringify(val).indexOf('&') !== -1) {
+      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
+                   'will be escaped to `&amp;`');
+    };
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will eliminate the double quotes around dates in ' +
+                   'ISO form after 2.0.0');
+    }
     return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
   } else if (escaped) {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
     return ' ' + key + '="' + exports.escape(val) + '"';
   } else {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
     return ' ' + key + '="' + val + '"';
   }
 };
@@ -3231,12 +3266,21 @@ exports.attrs = function attrs(obj, terse){
  * @api private
  */
 
-exports.escape = function escape(html){
-  var result = String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+var jade_encode_html_rules = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;'
+};
+var jade_match_html = /[&<>"]/g;
+
+function jade_encode_char(c) {
+  return jade_encode_html_rules[c] || c;
+}
+
+exports.escape = jade_escape;
+function jade_escape(html){
+  var result = String(html).replace(jade_match_html, jade_encode_char);
   if (result === '' + html) return html;
   else return result;
 };
@@ -3283,13 +3327,17 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
   throw err;
 };
 
+exports.DebugItem = function DebugItem(lineno, filename) {
+  this.lineno = lineno;
+  this.filename = filename;
+}
+
 },{"fs":2}],2:[function(_dereq_,module,exports){
 
-},{}]},{},[1])
-(1)
+},{}]},{},[1])(1)
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],13:[function(_dereq_,module,exports){
+},{"fs":2}],14:[function(_dereq_,module,exports){
 var $, Login, Main, User, assert;
 
 $ = _dereq_('jquery');
@@ -3377,10 +3425,10 @@ module.exports = new Main();
 
 
 
-},{"./models/user":14,"./views/login":19,"assert":1}],14:[function(_dereq_,module,exports){
-var $, Backbone, User, btoa, funcky, _,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+},{"./models/user":15,"./views/login":20,"assert":1}],15:[function(_dereq_,module,exports){
+var $, Backbone, User, _, btoa, funcky,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 Backbone = _dereq_('backbone');
 
@@ -3402,42 +3450,42 @@ unauthorized
 data-fetched
  */
 
-User = (function(_super) {
-  __extends(User, _super);
+User = (function(superClass) {
+  extend(User, superClass);
 
   function User() {
     return User.__super__.constructor.apply(this, arguments);
   }
 
-  User.prototype.initialize = function(attrs, settings, options) {
+  User.prototype.initialize = function(attrs, settings, options1) {
     this.settings = settings;
-    this.options = options;
+    this.options = options1;
     if (this.options.url != null) {
       this.url = this.options.url();
     }
     this.fetched = false;
     this._prefix = "hi-" + this.options.tokenPrefix;
-    return this.tokenPropertyName = "" + this._prefix + "-auth-token";
+    return this.tokenPropertyName = this._prefix + "-auth-token";
   };
 
   User.prototype._checkTokenInUrl = function() {
-    var key, param, parameters, path, value, _i, _len, _ref, _results;
+    var i, key, len, param, parameters, path, ref, results, value;
     path = window.location.search.substr(1);
     parameters = path.split('&');
-    _results = [];
-    for (_i = 0, _len = parameters.length; _i < _len; _i++) {
-      param = parameters[_i];
-      _ref = param.split('='), key = _ref[0], value = _ref[1];
+    results = [];
+    for (i = 0, len = parameters.length; i < len; i++) {
+      param = parameters[i];
+      ref = param.split('='), key = ref[0], value = ref[1];
       if (key === 'hsid') {
         this.setToken(value);
-        _results.push(Backbone.history.navigate(window.location.pathname, {
+        results.push(Backbone.history.navigate(window.location.pathname, {
           trigger: true
         }));
       } else {
-        _results.push(void 0);
+        results.push(void 0);
       }
     }
-    return _results;
+    return results;
   };
 
   User.prototype._fetchUserData = function() {
@@ -3540,11 +3588,11 @@ User = (function(_super) {
   };
 
   User.prototype.setFederatedLoginStarted = function() {
-    return localStorage.setItem("" + this._prefix + "-federated-login-started", true);
+    return localStorage.setItem(this._prefix + "-federated-login-started", true);
   };
 
   User.prototype.federatedLoginHasStarted = function() {
-    return localStorage.getItem("" + this._prefix + "-federated-login-started") != null;
+    return localStorage.getItem(this._prefix + "-federated-login-started") != null;
   };
 
   return User;
@@ -3555,10 +3603,10 @@ module.exports = User;
 
 
 
-},{"btoa":9,"funcky.req":10}],15:[function(_dereq_,module,exports){
+},{"btoa":10,"funcky.req":11}],16:[function(_dereq_,module,exports){
 var Backbone, Basic, tpl,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 Backbone = _dereq_('backbone');
 
@@ -3570,8 +3618,8 @@ tpl = _dereq_('./index.jade');
 @extends Backbone.View
  */
 
-Basic = (function(_super) {
-  __extends(Basic, _super);
+Basic = (function(superClass) {
+  extend(Basic, superClass);
 
   function Basic() {
     return Basic.__super__.constructor.apply(this, arguments);
@@ -3655,7 +3703,7 @@ module.exports = Basic;
 
 
 
-},{"./index.jade":16}],16:[function(_dereq_,module,exports){
+},{"./index.jade":17}],17:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3665,10 +3713,10 @@ var jade_interp;
 
 buf.push("<h3>Basic login</h3><form><ul><li><input type=\"text\" placeholder=\"Username or email address\"/></li><li><input type=\"password\" placeholder=\"Password\"/></li><li><button>Login</button></li></ul></form>");;return buf.join("");
 };
-},{"jade/runtime":12}],17:[function(_dereq_,module,exports){
+},{"jade/runtime":13}],18:[function(_dereq_,module,exports){
 var $, Backbone, Federated, tpl,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 Backbone = _dereq_('backbone');
 
@@ -3682,8 +3730,8 @@ tpl = _dereq_('./index.jade');
 @extends Backbone.View
  */
 
-Federated = (function(_super) {
-  __extends(Federated, _super);
+Federated = (function(superClass) {
+  extend(Federated, superClass);
 
   function Federated() {
     return Federated.__super__.constructor.apply(this, arguments);
@@ -3728,7 +3776,7 @@ module.exports = Federated;
 
 
 
-},{"./index.jade":18}],18:[function(_dereq_,module,exports){
+},{"./index.jade":19}],19:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3738,15 +3786,15 @@ var jade_interp;
 
 buf.push("<button>Federated login</button>");;return buf.join("");
 };
-},{"jade/runtime":12}],19:[function(_dereq_,module,exports){
+},{"jade/runtime":13}],20:[function(_dereq_,module,exports){
 var $, Backbone, Basic, Federated, Login, Modal, RequestAccess,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 Backbone = _dereq_('backbone');
 
-$ = _dereq_('jquery');
+$ = Backbone.$ = _dereq_('jquery');
 
 Modal = _dereq_('hibb-modal');
 
@@ -3762,11 +3810,11 @@ RequestAccess = _dereq_('./request-access');
 @extends Backbone.View
  */
 
-Login = (function(_super) {
-  __extends(Login, _super);
+Login = (function(superClass) {
+  extend(Login, superClass);
 
   function Login() {
-    this._handleBasicSuccess = __bind(this._handleBasicSuccess, this);
+    this._handleBasicSuccess = bind(this._handleBasicSuccess, this);
     return Login.__super__.constructor.apply(this, arguments);
   }
 
@@ -3775,7 +3823,7 @@ Login = (function(_super) {
 
   /*
   	@constructs
-  	
+  
   	@param {object} this.settings
   	@param {object} this.settings.basic
   	@param {string} this.settings.basic.url
@@ -3790,11 +3838,11 @@ Login = (function(_super) {
    */
 
   Login.prototype.initialize = function(settings, options) {
-    var _base;
+    var base;
     this.settings = settings;
     this.options = options;
-    if ((_base = this.options).modal == null) {
-      _base.modal = false;
+    if ((base = this.options).modal == null) {
+      base.modal = false;
     }
     this.listenTo(this.options.user, 'basic:authorized', this._handleBasicSuccess);
     return this.render();
@@ -3880,10 +3928,10 @@ module.exports = Login;
 
 
 
-},{"./basic":15,"./federated":17,"./request-access":20,"hibb-modal":11}],20:[function(_dereq_,module,exports){
+},{"./basic":16,"./federated":18,"./request-access":21,"hibb-modal":12}],21:[function(_dereq_,module,exports){
 var $, Backbone, RequestAccess, funcky, tpl,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 Backbone = _dereq_('backbone');
 
@@ -3898,8 +3946,8 @@ tpl = _dereq_('./index.jade');
 @class
  */
 
-RequestAccess = (function(_super) {
-  __extends(RequestAccess, _super);
+RequestAccess = (function(superClass) {
+  extend(RequestAccess, superClass);
 
   function RequestAccess() {
     return RequestAccess.__super__.constructor.apply(this, arguments);
@@ -3979,7 +4027,7 @@ module.exports = RequestAccess;
 
 
 
-},{"./index.jade":21,"funcky.req":10}],21:[function(_dereq_,module,exports){
+},{"./index.jade":22,"funcky.req":11}],22:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3989,6 +4037,6 @@ var jade_interp;
 
 buf.push("<h3>Request access</h3><div class=\"message\">Request for access has been send.</div><form><ul><li><input type=\"text\" name=\"full-name\" placeholder=\"Full name\"/></li><li><input type=\"text\" name=\"email\" placeholder=\"Emailaddress\"/></li><li><button>Send request</button></li></ul></form>");;return buf.join("");
 };
-},{"jade/runtime":12}]},{},[13])
-(13)
+},{"jade/runtime":13}]},{},[14])
+(14)
 });

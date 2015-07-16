@@ -1,5 +1,5 @@
 Backbone = require 'backbone'
-$ = require 'jquery'
+$ = Backbone.$ = require 'jquery'
 
 Modal = require 'hibb-modal'
 
@@ -18,7 +18,7 @@ class Login extends Backbone.View
 
 	###
 	@constructs
-	
+
 	@param {object} this.settings
 	@param {object} this.settings.basic
 	@param {string} this.settings.basic.url
@@ -50,7 +50,7 @@ class Login extends Backbone.View
 
 		if @options.requestAccess
 			requestAccess = new RequestAccess @settings
-			
+
 			@listenTo requestAccess, "request-access", =>
 				@$el.addClass 'request-access-active'
 
@@ -68,7 +68,7 @@ class Login extends Backbone.View
 				width: '400px'
 				clickOverlay: false
 
-			@listenTo @_modal, 'cancel', => 
+			@listenTo @_modal, 'cancel', =>
 				@trigger 'modal:cancel'
 
 			# @listenTo @_modal, 'close', =>
